@@ -1,0 +1,86 @@
+#include <ESP8266WiFi.h>
+#include <AccelStepper.h>
+#include <Wire.h>
+#include <Adafruit_MotorShield.h>
+#include "utility/Adafruit_MS_PWMServoDriver.h"
+
+const int buttonPin = 2; //Hall Effect Sensor
+int buttonState = 0; //Intitial state of sensor
+int lastButtonState = 0; //Most recent state of sensor
+int revolutions = 0; //Number of times sensor is triggered. Each trigger represents 1 revolution
+
+// Create the motor shield object with the default I2C address
+Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
+// Or, create it with a different I2C address (say for stacking)
+// Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61); 
+
+
+// Connect a stepper motor with 200 steps per revolution (1.8 degree)
+// to motor port #2 (M3 and M4)
+Adafruit_StepperMotor *myStepper1 = AFMS.getStepper(200, 2);
+
+
+// you can change these to DOUBLE or INTERLEAVE or MICROSTEP!
+void forwardstep1() {  
+  myStepper1->onestep(FORWARD, DOUBLE);
+}
+void backwardstep1() {  
+  myStepper1->onestep(BACKWARD, DOUBLE);
+}
+
+
+AccelStepper Astepper1(forwardstep1, backwardstep1); // use functions to step
+
+ 
+const char* ssid     = "Venture Industries";
+const char* password = "wecameinpeaceforall";
+ 
+const char* host = "wifitest.adafruit.com";
+void setup()
+{  
+   Serial.begin(115200);           // set up Serial library at 9600 bps
+   Serial.println("Stepper test!");
+  
+  AFMS.begin();  // create with the default frequency 1.6KHz
+  //AFMS.begin(1000);  // OR with a different frequency, say 1KHz
+
+  Astepper1.setSpeed(100);  
+  delay(5000);
+  pinMode(buttonPin, INPUT);
+    delay(100);
+ 
+  // We start by connecting to a WiFi network
+ 
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  
+  WiFi.begin(ssid, password);
+  
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+ 
+  Serial.println("");
+  Serial.println("WiFi connected");  
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void loop()
+{ 
+  Astepper1.runSpeed();
+  unsigned long currentMillis = millis();
+  
+  buttonState = digitalRead(buttonPin);
+  if (buttonState != lastButtonState){
+    if (buttonState == HIGH){
+      revolutions++;
+      Serial.println(revolutions);
+    }
+  }
+  
+  lastButtonState = buttonState;
+}
