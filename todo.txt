@@ -1,3 +1,7 @@
 implement deep sleep:
-  save battery value, sensor value and location in eeprom to eeprom
-  add while loop to keep reading sensor for X amount of time after change of state is detected
+  https://www.losant.com/blog/making-the-esp8266-low-powered-with-deep-sleep
+  
+save battery value, sensor value and location in eeprom to eeprom
+  http://www.makeuseof.com/tag/use-arduino-eeprom-save-data-power-cycles/
+  
+add while loop to keep reading sensor for X amount of time after change of state is detected
