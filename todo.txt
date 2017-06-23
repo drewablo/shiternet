@@ -1,0 +1,3 @@
+implement deep sleep:
+  save battery value, sensor value and location in eeprom to eeprom
+  add while loop to keep reading sensor for X amount of time after change of state is detected
